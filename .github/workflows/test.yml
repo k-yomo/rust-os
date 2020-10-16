@@ -1,0 +1,36 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+
+      - name: Install Rustup Components
+        run: rustup component add rust-src llvm-tools-preview
+
+      - name: Install QEMU
+        run: sudo apt install qemu-system-x86
+
+      - name: Install bootimage
+        run: cargo install bootimage --debug
+      - name: Run bootimage
+        uses: actions-rs/cargo@v1
+        with:
+          command: bootimage
+
+      - name: Run test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
